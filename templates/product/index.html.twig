@@ -3,18 +3,23 @@
 {% block title %}Hello ProductController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <h1>List Products </h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/michael/projects/biscotah/src/Controller/ProductController.php'|file_link(0) }}">src/Controller/ProductController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/michael/projects/biscotah/templates/product/index.html.twig'|file_link(0) }}">templates/product/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <table class="table">
+
+        <a href="{{ path("app_product_add") }}" class="btn btn-primary my-2"><i class="fa fa-plus"></i> Add product</a>
+
+        {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }} €</td>
+                <td>
+                        <a href="{{ path("app_product_edit", {"id": product.id}) }}" class="btn btn-primary"><i class="fa fa-pencil-alt"></i>
+                        <a href="{{ path("app_product_delete", {"id": product.id}) }}" class="btn btn-danger ml-2"   onclick="return confirm('Delete this line?');"><i class="fa fa-trash-alt"></i>
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
 {% endblock %}
