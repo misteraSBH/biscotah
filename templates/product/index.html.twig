@@ -12,8 +12,13 @@
 
         {% for product in products %}
             <tr>
+                <td>{%  if product.photo is not null %}
+                        <a href="/upload/{{ product.photo }}"><img src="/upload/{{ product.photo }}" style="max-width:80px; max-height:80px"></a>
+                    {% endif %}
+                </td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.price }} €</td>
+                <td>{{ product.category }}</td>
                 <td>
                         <a href="{{ path("app_product_edit", {"id": product.id}) }}" class="btn btn-primary"><i class="fa fa-pencil-alt"></i>
                         <a href="{{ path("app_product_delete", {"id": product.id}) }}" class="btn btn-danger ml-2"   onclick="return confirm('Delete this line?');"><i class="fa fa-trash-alt"></i>

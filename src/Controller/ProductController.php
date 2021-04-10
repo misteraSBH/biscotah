@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\ImageUploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ class ProductController extends AbstractController
      */
     public function index(ProductRepository $productRepository): Response
     {
-        $products = $productRepository->findAll();
+        $products = $productRepository->findby([],["category"=>"DESC"]);
 
         return $this->render('product/index.html.twig', [
             'products' => $products,
@@ -28,7 +29,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/product/add", name="app_product_add")
      */
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
+    public function add(Request $request, EntityManagerInterface $entityManager, ImageUploaderHelper $fileUploader): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
@@ -38,6 +39,12 @@ class ProductController extends AbstractController
             /**@var $product Product */
 
             $product = $form->getData();
+            $uploadedFile = $form->get('photo')->getData();
+
+            if($uploadedFile) {
+                $fileName = $fileUploader->upload($uploadedFile);
+                $product->setPhoto($fileName);
+            }
 
             $entityManager->persist($product);
             $entityManager->flush();
@@ -55,7 +62,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/product/{id}/edit", name="app_product_edit")
      */
-    public function edit(int $id, Product $product, Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(int $id, Product $product, Request $request, EntityManagerInterface $entityManager, ImageUploaderHelper $fileUploader): Response
     {
 
         $form = $this->createForm(ProductType::class, $product);
@@ -65,6 +72,13 @@ class ProductController extends AbstractController
             /**@var $product Product */
 
             $product = $form->getData();
+            $uploadedFile = $form->get('photo')->getData();
+
+            if($uploadedFile) {
+                $fileName = $fileUploader->upload($uploadedFile);
+                $product->setPhoto($fileName);
+            }
+
 
             $entityManager->persist($product);
             $entityManager->flush();

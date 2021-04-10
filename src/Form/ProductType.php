@@ -7,6 +7,7 @@ use App\Entity\Color;
 use App\Entity\Product;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,7 +23,9 @@ class ProductType extends AbstractType
                 'class' => Category::class,
                 'required' => false,
             ])
-            ->add('photo')
+            ->add('photo', FileType::class, [
+                "mapped"=>false,
+            ])
             ->add('colors',EntityType::class,[
                 'class' => Color::class,
                 'multiple' => true,
