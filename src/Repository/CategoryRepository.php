@@ -19,10 +19,14 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function findByParentNotNull()
+    public function findByParentNotNull($id)
     {
+        if($id=="all"){$id="%";}
+
         return $this->createQueryBuilder('c')
             ->andWhere('c.parent IS NOT NULL')
+            ->andWhere('c.id LIKE :id')
+            ->setParameter('id', $id)
             ->getQuery()
             ->getResult()
             ;

@@ -1,8 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'basefront.html.twig' %}
 
-{% block title %}Hello FrontController!{% endblock %}
+{% block title %}Biscotah{% endblock %}
 
 {% block body %}
+
     <h1 class="my-5">Biscotta Online</h1>
 
     {% for category in categories %}
@@ -10,7 +11,7 @@
 
         <div class="card-deck">
         {% for product in products[category.id] %}
-            <div class="col-4 mb-3">
+            <div class="col-3 mb-3">
                 <div class="card  h-100">
                     {%  if  product.photo is not null  %}
                         <img src="/upload/{{ product.photo }}" class="card-img-top" alt="">

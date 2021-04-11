@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="card-header">
+        <h2>Cart</h2>
+    </div>
+    <div class="card-body py-0">
+        {% for cartItem in app.session.get("app_current_cart").cartitems %}
+            <div class="row border-bottom py-2">
+                <div class="row col-12 text-center">
+                    <div class="col-3 ">
+                        {% if(cartItem.quantity > 1) %}
+                            <a href="{{ path("app_cart_cartitem_product_modify", {"id":  app.session.get("app_current_cart").id, "idCartItem": cartItem.id , "action": "remove"}) }}" class="btn btn-primary btn-sm ">-</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-3 ">
+                        {{ cartItem.quantity }}
+                    </div>
+                    <div class="col-3">
+                        <a href="{{ path("app_cart_cartitem_product_modify", {"id":  app.session.get("app_current_cart").id, "idCartItem": cartItem.id , "action": "add"}) }}" class="btn btn-primary btn-sm">+</a>
+                    </div>
+                </div>
+                <div class="col-12">{{ cartItem.product.name }}</div>
+                <div class="col-8">{{ cartItem.product.price }} €</div>
+                <div class="col-4">
+                    <a href="{{ path("app_cart_cartitem_product_delete", {"id": app.session.get("app_current_cart").id, "idCartItem": cartItem.id})}}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete ?');"><i class="fa fa-trash-alt"></i></a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="card-footer">
+        <div class="row  font-weight-bold">
+            <div class="col-6">TOTAL</div>
+            <div class="col-6 text-right">{{ cart.totalAmount }} €</div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 text-center">
+    <a href="{{ path("app_purchase") }}" class="btn btn-success btn-lg  mt-3">Confirm my cart</a>
+</div>
