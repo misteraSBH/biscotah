@@ -37,6 +37,9 @@
                         </li>
                         {% endfor %}
 
+                        <li class="nav-item ml-auto">
+                            <a href="{{ path("app_login") }}"> LogIn</a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -46,7 +49,7 @@
                     {% block body %}{% endblock %}
                 </div>
                 <div class="col-3">
-                    {# include('_cart.html.twig') #}
+                    {% include('_cart.html.twig') %}
                 </div>
             </div>
         </div>

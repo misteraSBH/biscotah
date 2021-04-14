@@ -24,10 +24,21 @@
                     <div class="card-body">
                         {{ product.description }}
 
+                        <p class="font-weight-bold mb-0 mt-3">Available</p>
+                        <form method="post" action="{{ path("app_cart_cartitem_shoes_add") }}">
+                            <select name="option[color]">
+                                {% for color in product.colors %}
+                                    <option value="{{ color.id }}">{{ color.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <input type="hidden" name="productId" value="{{ product.id }}">
+                            <input type="submit" class="btn btn-primary" value="Add Cart">
+                        </form>
+
                     </div>
                     <div class="card-footer">
                         {{ product.price }} €
-
                     </div>
                 </div>
 

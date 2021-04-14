@@ -3,10 +3,12 @@
 namespace App\Form;
 
 use App\Entity\Category;
-use App\Entity\Color;
+use App\Entity\ColorProduct;
 use App\Entity\Product;
+use phpDocumentor\Reflection\Types\Collection;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,12 +28,14 @@ class ProductType extends AbstractType
             ->add('photo', FileType::class, [
                 "mapped"=>false,
             ])
-            ->add('colors',EntityType::class,[
-                'class' => Color::class,
-                'multiple' => true,
-                'expanded' => true,
-                'required' => false,
-            ])
+            ->add('colors', CollectionType::class,[
+                    'entry_type' => ColorProductType::class,
+
+                    'allow_add' => true,
+                    'prototype' => true,
+                ]
+            )
+
         ;
     }
 

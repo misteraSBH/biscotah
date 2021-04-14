@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Cart;
+use App\Entity\CartItem;
+use App\Repository\CartItemRepository;
 use App\Repository\CartRepository;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -20,9 +23,10 @@ class FrontController extends AbstractController
     /**
      * @Route("/", name="app_front")
      */
-    public function index(CategoryRepository $categoryRepository, ProductRepository $productRepository, SessionInterface $session, Request $request, CartRepository $cartRepository): Response
+    public function index(CategoryRepository $categoryRepository, ProductRepository $productRepository, SessionInterface $session, Request $request, CartRepository $cartRepository, EntityManagerInterface $entityManager): Response
     {
         $categories = $categoryRepository->findByParentNotNull("all");
+
 
         foreach($categories as $category){
             $products[$category->getId()] = $productRepository->findBy([
@@ -31,12 +35,15 @@ class FrontController extends AbstractController
                     "price"=>"ASC",
                 ]);
         }
+
+        #$session->clear();
+
         $session->set("app_categories", $categories);
 
-        /*if( $session->get("app_current_cart") == null){
+        if( $session->get("app_current_cart") == null){
 
-            if($request->cookies->get('app_delifood_cart')){
-                $cart = $cartRepository->findOneBy(["uuid"=>$request->cookies->get('app_delifood_cart')]);
+            if($request->cookies->get('app_biscotah_cart')){
+                $cart = $cartRepository->findOneBy(["uuid"=>$request->cookies->get('app_biscotah_cart')]);
                 $session->set("app_current_cart", $cart);
             } else {
 
@@ -44,7 +51,7 @@ class FrontController extends AbstractController
                 $entityManager->persist($cart);
                 $entityManager->flush();
 
-                $cookie = Cookie::create("app_delifood_cart")
+                $cookie = Cookie::create("app_biscotah_cart")
                     ->withValue($cart->getUuid())
                     ->withExpires(strtotime('Fri, 20-May-2022 15:00:00 GMT'))
                     ->withSecure(true);
@@ -54,7 +61,7 @@ class FrontController extends AbstractController
         } else {
             $cart = $cartRepository->find($session->get("app_current_cart")->getId());
             $session->set("app_current_cart", $cart);
-        }*/
+        }
 
 
         return $this->render('front/index.html.twig', [
@@ -66,9 +73,9 @@ class FrontController extends AbstractController
     }
 
     /**
-     * @Route("/category/{id}/{name}", name="app_front_listByCategory")
+     * @Route("/category/{id}", name="app_front_listByCategory")
      */
-    public function indexCategory(int $id, CategoryRepository $categoryRepository, ProductRepository $productRepository, SessionInterface $session): Response
+    public function indexCategory(int $id, CategoryRepository $categoryRepository, ProductRepository $productRepository, SessionInterface $session,CartRepository $cartRepository): Response
     {
         $categories = $categoryRepository->findByParentNotNull($id);
 
@@ -80,7 +87,6 @@ class FrontController extends AbstractController
             ]);
         }
 
-
         return $this->render('front/index.html.twig', [
             'products' => $products,
             'categories' => $categories,
@@ -88,4 +94,6 @@ class FrontController extends AbstractController
 
 
     }
+
+
 }

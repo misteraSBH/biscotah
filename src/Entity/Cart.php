@@ -6,8 +6,8 @@ use App\Repository\CartRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Config\Definition\FloatNode;
 use Symfony\Component\Uid\Uuid;
+
 
 /**
  * @ORM\Entity(repositoryClass=CartRepository::class)
@@ -24,17 +24,17 @@ class Cart
     /**
      * @ORM\OneToMany(targetEntity=CartItem::class, mappedBy="cart", orphanRemoval=true, cascade={"persist"})
      */
-    private $cartitems;
+    private $cartItems;
 
-    #/**
-    # * @ORM\Column(type="uuid", nullable=true)
-    # */
-    #private $uuid;
+    /**
+     * @ORM\Column(type="uuid", nullable=true)
+     */
+    private $uuid;
 
     public function __construct()
     {
-        $this->cartitems = new ArrayCollection();
-        #$this->uuid = Uuid::v4();
+        $this->cartItems = new ArrayCollection();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int
@@ -45,29 +45,31 @@ class Cart
     /**
      * @return Collection|CartItem[]
      */
-    public function getCartitems(): Collection
+    public function getCartItems(): Collection
     {
-        return $this->cartitems;
+        return $this->cartItems;
     }
 
-    public function addCartitem(CartItem $cartitem): CartItem
+    public function addCartItem(CartItem $cartItem): CartItem
     {
-        foreach ($this->cartitems as $item){
+        #dump($this->cartItems);
+        foreach ($this->cartItems as $item){
+
             /**
              * @var CartItem $item
              */
-            if($item->getProduct()->getId() == $cartitem->getProduct()->getId()){
-                $item->setQuantity($item->getQuantity() + $cartitem->getQuantity());
+            if($item->getProduct()->getId() == $cartItem->getProduct()->getId() && empty(array_diff($item->getOptions(),$cartItem->getOptions())) ){
+                $item->setQuantity($item->getQuantity() + $cartItem->getQuantity());
                 return $item;
             }
         }
 
-        $this->cartitems[] = $cartitem;
+        $this->cartItems[] = $cartItem;
 
-        return $cartitem;
+        return $cartItem;
     }
 
-    public function removeCartitem(Product $product)
+    public function removeCartItem(Product $product)
     {
         /*if ($this->cartitems->removeElement($cartitem)) {
             // set the owning side to null (unless already changed)
@@ -76,13 +78,13 @@ class Cart
             }
         }*/
 
-        foreach ($this->cartitems as $item){
+        foreach ($this->cartItems as $item){
             /**
              * @var CartItem $item
              */
             if($item->getProduct()->getId() == $product->getId()){
 
-                $this->cartitems->removeElement($item);
+                $this->cartItems->removeElement($item);
                 return $this;
             }
         }
@@ -94,11 +96,11 @@ class Cart
     public function getTotalAmount()
     {
         $totalAmount = 0;
-        foreach($this->cartitems as $cartitem){
+        foreach($this->cartItems as $cartItem){
             /**
-             * @var $cartitem CartItem
+             * @var $cartItem CartItem
              */
-            $totalAmount += $cartitem->getQuantity() * $cartitem->getProduct()->getPrice();
+            $totalAmount += $cartItem->getQuantity() * $cartItem->getProduct()->getPrice();
         }
 
         return $totalAmount;

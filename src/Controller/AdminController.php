@@ -2,18 +2,29 @@
 
 namespace App\Controller;
 
+use App\Entity\ColorProduct;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Repository\PurchaseRepository;
 use App\Service\ImageUploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProductController extends AbstractController
+
+/**
+ * Class AdminController
+ * @IsGranted("ROLE_ADMIN")
+ */
+class AdminController extends AbstractController
 {
+    #-----------
+    # Product
+    #-----------
     /**
      * @Route("/product", name="app_product_list")
      */
@@ -37,6 +48,8 @@ class ProductController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {
             /**@var $product Product */
+
+
 
             $product = $form->getData();
             $uploadedFile = $form->get('photo')->getData();
@@ -70,8 +83,16 @@ class ProductController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {
             /**@var $product Product */
-
             $product = $form->getData();
+
+            /**@var $color ColorProduct */
+            $colors = $form->get('colors')->getData();
+            foreach($colors as $color){
+                if($color->getName() != null){
+                    $color->setProduct($product);
+                }
+            }
+
             $uploadedFile = $form->get('photo')->getData();
 
             if($uploadedFile) {
@@ -93,6 +114,7 @@ class ProductController extends AbstractController
         ]);
     }
 
+
     /**
      * @Route("/product/{id}/delete", name="app_product_delete")
      */
@@ -105,5 +127,21 @@ class ProductController extends AbstractController
 
         return $this->redirectToRoute("app_product_list");
 
+    }
+
+    #-----------
+    # Orders
+    #-----------
+
+    /**
+     * @Route("/orders", name="app_orders")
+     */
+    public function orders_list(PurchaseRepository $purchaseRepository): Response
+    {
+        $purchases = $purchaseRepository->findAll();
+
+        return $this->render('admin/orders_list.html.twig', [
+            'purchases' => $purchases,
+        ]);
     }
 }

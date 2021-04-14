@@ -6,11 +6,12 @@ use App\Repository\ColorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ColorRepository::class)
  */
-class Color
+class ColorProduct
 {
     /**
      * @ORM\Id
@@ -21,17 +22,24 @@ class Color
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
+
     /**
-     * @ORM\ManyToMany(targetEntity=Product::class, mappedBy="colors")
+     * @ORM\Column(type="integer")
      */
-    private $products;
+    private $qty;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="colors")
+     */
+    private $product;
 
     public function __construct()
     {
-        $this->products = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -51,35 +59,34 @@ class Color
         return $this;
     }
 
-    /**
-     * @return Collection|Product[]
-     */
-    public function getProducts(): Collection
-    {
-        return $this->products;
-    }
 
-    public function addProduct(Product $product): self
-    {
-        if (!$this->products->contains($product)) {
-            $this->products[] = $product;
-            $product->addColor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduct(Product $product): self
-    {
-        if ($this->products->removeElement($product)) {
-            $product->removeColor($this);
-        }
-
-        return $this;
-    }
 
     public function __toString()
     {
         return $this->getName();
+    }
+
+    public function getQty(): ?int
+    {
+        return $this->qty;
+    }
+
+    public function setQty(int $qty): self
+    {
+        $this->qty = $qty;
+
+        return $this;
+    }
+
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): self
+    {
+        $this->product = $product;
+
+        return $this;
     }
 }

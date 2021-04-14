@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block body %}
+    <h1>Orders</h1>
+
+    <table class="table">
+        {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.purchaseNumber }}</td>
+                <td>{{ purchase.totalAmount }} €</td>
+                <td>
+
+                    {%  for purchaseItem in purchase.purchaseItems %}
+                        <li>
+                        {{ purchaseItem.quantity }} {{ purchaseItem.product.name }}
+                        (Option:
+                            {% for option in purchaseItem.options %}
+                                {{ option.name }},
+                           {% endfor %}
+                        )
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </table>
+{% endblock %}
